@@ -1,8 +1,6 @@
 # Docker Compose configuration for Employee Management System
 # Includes web application, PostgreSQL database, and Redis cache
 
-version: '3.8'
-
 services:
   # PostgreSQL Database
   db:

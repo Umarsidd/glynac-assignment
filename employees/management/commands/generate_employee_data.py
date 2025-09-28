@@ -387,7 +387,7 @@ class Command(BaseCommand):
                     
                     # Salary increase (3-15%)
                     increase_percentage = random.uniform(0.03, 0.15)
-                    new_salary = current_salary * (1 + increase_percentage)
+                    new_salary = current_salary * Decimal(str(1 + increase_percentage))
                     current_salary = new_salary
                     
                     salary_types = ['annual_raise', 'promotion', 'performance_bonus', 'adjustment']

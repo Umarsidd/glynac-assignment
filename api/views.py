@@ -13,14 +13,14 @@ from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django_ratelimit.decorators import ratelimit
-from django.utils.decorators import method_decorator
+# from django_ratelimit.decorators import ratelimit  # Disabled for demo
+# from django.utils.decorators import method_decorator  # Disabled for demo
 from django.db.models import Avg, Count, Sum, Q
 from django.http import HttpResponse
 from datetime import date, timedelta
-import pandas as pd
 import json
 import logging
+# import pandas as pd  # Temporarily disabled for SQLite demo
 
 from employees.models import Department, Employee, Attendance, Performance, Salary
 from .serializers import (
@@ -36,7 +36,7 @@ from .serializers import (
 logger = logging.getLogger(__name__)
 
 
-@method_decorator(ratelimit(key='user', rate='100/hour', method='ALL'), name='dispatch')
+# @method_decorator(ratelimit(key='user', rate='100/hour', method='ALL'), name='dispatch')  # Disabled for demo
 class DepartmentViewSet(viewsets.ModelViewSet):
     """
     ViewSet for Department model.
@@ -75,7 +75,7 @@ class DepartmentViewSet(viewsets.ModelViewSet):
         return Response(stats)
 
 
-@method_decorator(ratelimit(key='user', rate='100/hour', method='ALL'), name='dispatch')
+# @method_decorator(ratelimit(key='user', rate='100/hour', method='ALL'), name='dispatch')  # Disabled for demo
 class EmployeeViewSet(viewsets.ModelViewSet):
     """
     ViewSet for Employee model.
@@ -135,7 +135,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-@method_decorator(ratelimit(key='user', rate='200/hour', method='ALL'), name='dispatch')
+# @method_decorator(ratelimit(key='user', rate='200/hour', method='ALL'), name='dispatch')  # Disabled for demo
 class AttendanceViewSet(viewsets.ModelViewSet):
     """
     ViewSet for Attendance model.
@@ -173,7 +173,7 @@ class AttendanceViewSet(viewsets.ModelViewSet):
         return Response(report)
 
 
-@method_decorator(ratelimit(key='user', rate='50/hour', method='ALL'), name='dispatch')
+# @method_decorator(ratelimit(key='user', rate='50/hour', method='ALL'), name='dispatch')  # Disabled for demo
 class PerformanceViewSet(viewsets.ModelViewSet):
     """
     ViewSet for Performance model.
@@ -214,7 +214,7 @@ class PerformanceViewSet(viewsets.ModelViewSet):
         return Response(analytics)
 
 
-@method_decorator(ratelimit(key='user', rate='50/hour', method='ALL'), name='dispatch')
+# @method_decorator(ratelimit(key='user', rate='50/hour', method='ALL'), name='dispatch')  # Disabled for demo
 class SalaryViewSet(viewsets.ModelViewSet):
     """
     ViewSet for Salary model.
@@ -263,7 +263,7 @@ class AnalyticsView(APIView):
     """
     permission_classes = [permissions.IsAuthenticated]
 
-    @method_decorator(ratelimit(key='user', rate='20/hour', method='GET'))
+    # @method_decorator(ratelimit(key='user', rate='20/hour', method='GET'))  # Disabled for demo
     def get(self, request):
         """Get comprehensive analytics data."""
         try:
@@ -343,7 +343,7 @@ class DashboardView(APIView):
     """
     permission_classes = [permissions.IsAuthenticated]
 
-    @method_decorator(ratelimit(key='user', rate='30/hour', method='GET'))
+    # @method_decorator(ratelimit(key='user', rate='30/hour', method='GET'))  # Disabled for demo
     def get(self, request):
         """Get dashboard summary data."""
         try:
@@ -393,7 +393,7 @@ class ExportDataView(APIView):
     """
     permission_classes = [permissions.IsAuthenticated]
 
-    @method_decorator(ratelimit(key='user', rate='5/hour', method='GET'))
+    # @method_decorator(ratelimit(key='user', rate='5/hour', method='GET'))  # Disabled for demo
     def get(self, request):
         """Export employee data to CSV or Excel."""
         export_format = request.query_params.get('format', 'csv').lower()
@@ -437,18 +437,15 @@ class ExportDataView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
-            df = pd.DataFrame(data)
+            # Simple CSV export without pandas for demo
+            import csv
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = f'attachment; filename={data_type}_export.csv'
             
-            if export_format == 'excel':
-                response = HttpResponse(
-                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                )
-                response['Content-Disposition'] = f'attachment; filename={data_type}_export.xlsx'
-                df.to_excel(response, index=False)
-            else:
-                response = HttpResponse(content_type='text/csv')
-                response['Content-Disposition'] = f'attachment; filename={data_type}_export.csv'
-                df.to_csv(response, index=False)
+            if data:
+                writer = csv.DictWriter(response, fieldnames=data[0].keys())
+                writer.writeheader()
+                writer.writerows(data)
             
             logger.info("Data exported by user: %s, type: %s, format: %s", 
                        request.user.username, data_type, export_format)

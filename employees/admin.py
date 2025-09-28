@@ -54,6 +54,7 @@ class AttendanceInline(admin.TabularInline):
 class PerformanceInline(admin.TabularInline):
     """Inline admin for Performance reviews."""
     model = Performance
+    fk_name = 'employee'  # Specify which FK to use
     extra = 0
     fields = ['review_period_end', 'technical_skills', 'communication', 'teamwork', 'leadership', 'overall_rating']
     readonly_fields = ['overall_rating']
@@ -63,6 +64,7 @@ class PerformanceInline(admin.TabularInline):
 class SalaryInline(admin.TabularInline):
     """Inline admin for Salary records."""
     model = Salary
+    fk_name = 'employee'  # Specify which FK to use
     extra = 0
     fields = ['effective_date', 'base_salary', 'allowances', 'bonus', 'total_salary', 'salary_type']
     readonly_fields = ['total_salary']

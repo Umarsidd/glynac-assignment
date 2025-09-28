@@ -13,7 +13,14 @@ This module contains all Django configuration settings including:
 import os
 from pathlib import Path
 from decouple import config
-import dj_database_url
+import os
+
+# Try to import dj_database_url only if not using SQLite
+try:
+    import dj_database_url
+    HAS_DJ_DATABASE_URL = True
+except ImportError:
+    HAS_DJ_DATABASE_URL = False
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -41,7 +48,7 @@ THIRD_PARTY_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'drf_yasg',
-    'django_ratelimit',
+    # 'django_ratelimit',  # Disabled for SQLite demo
     'django_filters',
 ]
 
@@ -84,9 +91,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'employee_management.wsgi.application'
 
-# Database Configuration - SQLite for development (fallback)
-import os
-if os.environ.get('USE_SQLITE', 'False').lower() == 'true':
+# Database Configuration
+if os.environ.get('USE_SQLITE', 'False').lower() == 'true' or not HAS_DJ_DATABASE_URL:
+    # SQLite Configuration for development
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -134,6 +141,13 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Cache Configuration (for SQLite demo)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    }
+}
 
 # Django REST Framework Configuration
 REST_FRAMEWORK = {
