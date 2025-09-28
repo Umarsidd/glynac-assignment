@@ -1,0 +1,26 @@
+# Simplified Docker Compose for local development
+# Use this if you have connectivity issues with the main docker-compose
+
+version: '3.8'
+
+services:
+  # Only PostgreSQL for now
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    volumes:
+      - postgres_data_local:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: glynac-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "AnjuDevi@#123"
+    ports:
+      - "5433:5432"  # Different port to avoid conflicts
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  postgres_data_local:

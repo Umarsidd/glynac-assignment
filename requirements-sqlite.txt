@@ -1,0 +1,30 @@
+# Core Django and DRF dependencies (SQLite version)
+Django==4.2.7
+djangorestframework==3.14.0
+django-cors-headers==4.3.1
+
+# No PostgreSQL for quick demo
+# psycopg2-binary==2.9.7  # Commented out
+# dj-database-url==2.1.0  # Commented out
+
+# Authentication and Security
+djangorestframework-simplejwt==5.3.0
+
+# API Documentation
+drf-yasg==1.21.7
+
+# Data Generation
+Faker==19.12.0
+
+# Environment Variables
+python-decouple==3.8
+
+# Rate Limiting
+django-ratelimit==4.1.0
+
+# Filtering
+django-filter==23.4
+
+# Development and Testing
+pytest-django==4.6.0
+pytest==7.4.3
